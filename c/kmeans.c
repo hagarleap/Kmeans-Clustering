@@ -8,8 +8,6 @@ int main(int argc, char *argv[])
 {
     int    k, iter;
 
-    
-
     if (argc != 3) {
         fprintf (stdout, "wrong number of arguments!\n");
         exit (1);
