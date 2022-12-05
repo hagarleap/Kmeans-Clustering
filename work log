@@ -1,0 +1,12 @@
+work log
+
+05/12-
+summary of the day-
+we created 2 functions :
+find_array_dimensions
+load_text
+
+to do-
+add to code checking that k and iter are valid
+continue coding by pyton
+fixing the pyton code - we need set arguments instead of field so ut will work($python3 kmeans.py 3 100 input_data.txt)
