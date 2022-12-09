@@ -19,3 +19,14 @@ cry
 fix python code
 talk to Ben
 get things to run 
+
+09/12
+made euclidian distance
+finished most of the while loop
+made two data structures- dict and vector
+initialized centroids
+initialized deltas
+
+to do-
+-test invalid inputs for python and c
+-

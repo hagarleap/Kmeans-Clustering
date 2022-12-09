@@ -1,7 +1,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <math.h>
-#define EPSILON  0.001;
+#define EPSILON  0.001
 
 struct cord_node
 {
@@ -107,6 +107,52 @@ struct cord_node* ZERO_vector(int vector_len){
       prev_zcord_node->next=NULL; 
       return head_zcord_node;
       
+}
+/*
+// def update_centroid(deltas, clusters, clusters_keys):
+//     i=0
+//     for old_centroid in clusters_keys:
+//         new_centroid = []
+//         avg_divisor = clusters[old_centroid][1]
+//         for bit in clusters[old_centroid][0]:
+//             new_centroid.append(bit/avg_divisor)
+
+//         deltas[i] = euclidian_distance(old_centroid, new_centroid)
+//         clusters.pop(old_centroid)
+//         clusters[tuple(new_centroid)] = [[0 for i in range(len(new_centroid))],0]
+*/
+
+void update_centroid(struct dict_centroid *head_dict_centroid, struct cord_node *deltas, int *max_delta_bigger_than_epsilon, int vector_len){
+    int i =0;
+    max_delta_bigger_than_epsilon=0;
+    struct cord_node *curr_sum_node;
+    struct cord_node *curr_centroid_node;
+    
+    while(head_dict_centroid!=NULL){
+
+        curr_sum_node = head_dict_centroid->sum;
+
+        for(i=0;i<vector_len;i++){
+            curr_sum_node->value = curr_sum_node->value /head_dict_centroid->avg_divisor;
+            curr_sum_node = curr_sum_node->next;
+        }
+
+        deltas->value = euclidian_distance(head_dict_centroid->centroid, head_dict_centroid->sum ,vector_len);
+        
+        if((deltas->value) > EPSILON){
+            //as long as ONE delta is bigger than epsilon, we want the while loop to keep going
+            *max_delta_bigger_than_epsilon=1;
+        }
+
+        curr_centroid_node = head_dict_centroid->centroid;
+        curr_sum_node = head_dict_centroid->sum;
+        for (i=0; i<vector_len; i++){
+            curr_centroid_node->value=curr_sum_node->value;
+            curr_sum_node->value=0;
+        }
+        head_dict_centroid = head_dict_centroid->next;
+    }
+
 }
 
 
@@ -258,7 +304,8 @@ int main(int argc, char *argv[])
     struct dict_centroid *centroid_list_dict = head_dict_centroid;
     int iter_count = 0;
     struct cord_node* deltas = init_deltas(K);
-    int max_delta_bigger_than_epsilon=1;
+    int *max_delta_bigger_than_epsilon;
+    *max_delta_bigger_than_epsilon=1;
     double argmin;
     double dist;
     struct dict_centroid *closest_cluster;
@@ -277,7 +324,7 @@ int main(int argc, char *argv[])
         
         update_centroid(deltas, clusters, clusters_keys)  
         iter_count+=1*/
-     while ((iter_count<iter) && (max_delta_bigger_than_epsilon==1)){
+     while ((iter_count<iter) && (*max_delta_bigger_than_epsilon==1)){
         
         while(vectors_list != NULL){
             argmin = euclidian_distance(vectors_list->cords, centroid_list_dict->centroid, vector_len);
@@ -298,7 +345,9 @@ int main(int argc, char *argv[])
             centroid_list_dict = head_dict_centroid;
         }
         iter_count+=1;
-        //update centroid
+        struct dict_centroid *centroid_head_for_UC =head_dict_centroid;
+        struct cord_node *delta_head_for_UC = deltas;
+        update_centroid(centroid_head_for_UC, delta_head_for_UC, max_delta_bigger_than_epsilon, vector_len);
      } 
 
 
