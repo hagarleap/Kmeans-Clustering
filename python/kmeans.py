@@ -1,3 +1,6 @@
+import getopt
+import sys
+
 def kmeans(k, input_data, iter=200):
 
     epsilon = 0.001
@@ -70,3 +73,12 @@ def update_centroid(deltas, clusters, clusters_keys):
         deltas[i] = euclidian_distance(old_centroid, new_centroid)
         clusters.pop(old_centroid)
         clusters[tuple(new_centroid)] = [[0 for i in range(len(new_centroid))],0]
+
+argv = sys.argv[1:]
+opts, args = getopt.getopt(argv, "")
+if len(args)==2:
+    kmeans(int(args[0]), args[1])
+elif len(args)==3:
+    kmeans(int(args[0]), args[2], int(args[1]))
+else:
+    print("An Error Has Occurred")
