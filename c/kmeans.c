@@ -12,10 +12,46 @@ struct vector
     struct vector *next;
     struct cord *cords;
 };
+struct dict_entry
+{
+    struct vector *centroid;
+    struct vector *sum;
+    int avg_divisor;
 
-struct vector load_file(char* filename, int *N){
+};
+
+// struct vector load_file(char* filename, int *N){
+    
+//     return *head_vec;
+// }
+
+
+
+int main(int argc, char *argv[])
+{
     FILE *fp;
-    int count = 0;
+    int K;
+    int iter;
+    char *filename;
+    char ch;
+    int N = 0;
+
+    if ((argc > 4) || (argc <= 2)) {
+        fprintf (stdout, "wrong number of arguments!\n");
+        exit (1);
+    }
+        
+    if (argc == 3) {
+        K = atoi (argv[1]);
+        iter = 200;
+        filename = argv[2];
+    }
+    else{
+        K = atoi (argv[1]);
+        iter = atoi (argv[2]);
+        filename = argv[3];
+    }
+
     
     fp = fopen(filename, "r");
 
@@ -36,9 +72,8 @@ struct vector load_file(char* filename, int *N){
 
     while (fscanf(fp,"%lf%c", &n, &c) == 2)
     {
-        count++;
-        printf("%d", *N);
-        printf("Entered n: %lf  c: %c \n", n, c);
+        N++;
+
         if (c == '\n')
         {
             curr_cord->value = n;
@@ -60,42 +95,22 @@ struct vector load_file(char* filename, int *N){
     }
     prev_vec->next = NULL;
     fclose(fp);
-    *N = count;
-    return *head_vec;
-}
-
-
-
-int main(int argc, char *argv[])
-{
-    int K;
-    int iter;
-    char *filename;
-    char ch;
-    struct vector *vectors;
-    int *N;
-    int i=0;
-    N=&i;
-
-    if ((argc > 4) || (argc <= 2)) {
-        fprintf (stdout, "wrong number of arguments!\n");
+    
+    printf("%d", N);
+    
+    if ((1>=K) || (K>=N)){
+        fprintf (stdout, "Invalid number of clusters!\n");
         exit (1);
     }
-        
-    if (argc == 3) {
-        K = atoi (argv[1]);
-        iter = 200;
-        filename = argv[2];
+    if ((1>=iter) || (K>=1000)){
+        fprintf (stdout, "Invalid maximum iteration!\n");
+        exit (1);
     }
-    else{
-        K = atoi (argv[1]);
-        iter = atoi (argv[2]);
-        filename = argv[3];
-    }
+
+    struct dict_entry clusters[K];
     
-    *vectors = load_file(filename, N);
-    printf("%d", *N);
+        
 
-    return 1;
+    exit(0);
 
-}
+} 
