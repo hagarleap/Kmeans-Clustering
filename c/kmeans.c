@@ -1,5 +1,6 @@
 # include <stdio.h>
 # include <stdlib.h>
+# include <math.h>
 #define EPSILON  0.001;
 
 struct cord_node
@@ -23,8 +24,91 @@ struct dict_centroid
 };
 
 
+/*receives sum field (cord_node type) from dict_centroid, and some other cord_node type.
+Adds each cord_node value to the sum field's cord node value iteratively.
+in the end, dict_centroid.sum == dict_centroid.sum(old) + cord_node */
 
-struct cord_node* ZERO_vector(int vector_len);
+void vector_addition(struct cord_node* closest_cluster_sum_vec,struct cord_node* vector,int vector_len){
+    double cord_value_vector;
+    int j;
+    for(j=0; j<vector_len; j++)
+      {
+        cord_value_vector = vector->value;
+        closest_cluster_sum_vec->value = closest_cluster_sum_vec->value + cord_value_vector;
+        vector = vector->next; 
+        closest_cluster_sum_vec = closest_cluster_sum_vec->next; 
+      }
+
+}
+
+
+/*def euclidian_distance(vec1, vec2):
+    sum = 0
+    for i in range(len(vec1)):
+        sum += (vec1[i]-vec2[i])**2
+    return sum**(1/2) */
+//recives 2 vector and return the euclidian distance between them
+double euclidian_distance(struct cord_node* vec1, struct cord_node* vec2, int vector_len){
+    double sum=0;
+    int j;
+    double cord_value_vec1;
+    double cord_value_vec2;
+    for(j=0; j<vector_len; j++)
+      {
+        cord_value_vec1 = vec1->value;
+        cord_value_vec2 = vec2->value;
+        vec1 = vec1->next; 
+        vec2 = vec2->next; 
+        sum += pow((cord_value_vec1-cord_value_vec2), 2);
+      }
+    sum = pow(sum,0.5);
+    return sum;
+}
+
+//making the deltas list as linked list on length
+struct cord_node* init_deltas(int K){
+      struct cord_node *head_deltas_node, *curr_deltas_node, *prev_deltas_node;
+      int i;
+      head_deltas_node = malloc(sizeof(struct cord_node));
+      curr_deltas_node = head_deltas_node;
+      curr_deltas_node->next = NULL;
+      for(i=0; i<K; i++)
+      {
+         curr_deltas_node->value = 1;
+         curr_deltas_node->next = malloc(sizeof(struct cord_node));
+         prev_deltas_node = curr_deltas_node;
+         curr_deltas_node = curr_deltas_node->next; 
+      }
+      prev_deltas_node->next=NULL; 
+      return head_deltas_node;
+}
+
+
+
+struct cord_node* ZERO_vector(int vector_len){
+
+      struct cord_node *head_zcord_node, *curr_zcord_node, *prev_zcord_node;
+      int l;
+
+      head_zcord_node = malloc(sizeof(struct cord_node));
+    //  assert(head_zcord_node!=NULL);
+      curr_zcord_node = head_zcord_node;
+      curr_zcord_node->next = NULL;
+
+
+      for(l=0; l<vector_len; l++)
+      {
+         curr_zcord_node->value = 0;
+         curr_zcord_node->next = malloc(sizeof(struct cord_node));
+         prev_zcord_node = curr_zcord_node;
+         curr_zcord_node = curr_zcord_node->next; 
+     //  assert(curr_zcord_node!=NULL);
+      }
+      prev_zcord_node->next=NULL; 
+      return head_zcord_node;
+      
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -157,8 +241,7 @@ int main(int argc, char *argv[])
     prev_vec->next = NULL;
     prev_dict_centroid->next = NULL;
     fclose(fp);
-    
-    printf("%d", N);
+   
     
     if ((1>=K) || (K>=N)){
         fprintf (stdout, "Invalid number of clusters!\n");
@@ -169,32 +252,58 @@ int main(int argc, char *argv[])
         exit (1);
     }
 
-     
+    //new head- for the lists of vector
+    struct vector_node *vectors_list = head_vec;
+    //new head- for the list of centroid dict
+    struct dict_centroid *centroid_list_dict = head_dict_centroid;
+    int iter_count = 0;
+    struct cord_node* deltas = init_deltas(K);
+    int max_delta_bigger_than_epsilon=1;
+    double argmin;
+    double dist;
+    struct dict_centroid *closest_cluster;
+/*while iter_count<iter and max(deltas)>epsilon:
+        clusters_keys = list(clusters.keys())  - the list of centroids
+        for x in vectors:  - moving on all the vectors list
+            argmin = euclidian_distance(x, clusters_keys[0])
+            closest_cluster = clusters_keys[0]
+            for i in range(1,k):
+                dist = euclidian_distance(x, clusters_keys[i])
+                if dist<argmin:
+                    argmin = dist
+                    closest_cluster = clusters_keys[i]
+            clusters[closest_cluster][1]+=1
+            clusters[closest_cluster][0] = [clusters[closest_cluster][0][i]+x[i] for i in range(len(x))]
+        
+        update_centroid(deltas, clusters, clusters_keys)  
+        iter_count+=1*/
+     while ((iter_count<iter) && (max_delta_bigger_than_epsilon==1)){
+        
+        while(vectors_list != NULL){
+            argmin = euclidian_distance(vectors_list->cords, centroid_list_dict->centroid, vector_len);
+            closest_cluster = head_dict_centroid;
+            centroid_list_dict= centroid_list_dict->next;
+            while(centroid_list_dict != NULL){
+                dist= euclidian_distance(vectors_list->cords, centroid_list_dict->centroid, vector_len);
+                if (dist<argmin) {
+                    argmin = dist;
+                    //need to verify it does not move
+                    closest_cluster = centroid_list_dict;
+                }
+                centroid_list_dict= centroid_list_dict->next;
+            }
+            closest_cluster->avg_divisor=  closest_cluster->avg_divisor + 1;
+            vector_addition(closest_cluster->sum,vectors_list->cords, vector_len);
+            vectors_list= vectors_list->next;
+            centroid_list_dict = head_dict_centroid;
+        }
+        iter_count+=1;
+        //update centroid
+     } 
+
 
     exit(0);
 
 }
 
-struct cord_node* ZERO_vector(int vector_len){
 
-      struct cord_node *head_zcord_node, *curr_zcord_node, *prev_zcord_node;
-      int l;
-
-      head_zcord_node = malloc(sizeof(struct cord_node));
-    //  assert(head_zcord_node!=NULL);
-      curr_zcord_node = head_zcord_node;
-      curr_zcord_node->next = NULL;
-
-
-      for(l=0; l<vector_len; l++)
-      {
-         curr_zcord_node->value = 0;
-         curr_zcord_node->next = malloc(sizeof(struct cord_node));
-         prev_zcord_node = curr_zcord_node;
-         curr_zcord_node = curr_zcord_node->next; 
-     //  assert(curr_zcord_node!=NULL);
-      }
-      prev_zcord_node->next=NULL; 
-      return head_zcord_node;
-      
-    }
