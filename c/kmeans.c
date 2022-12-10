@@ -139,6 +139,39 @@ int update_centroid(struct dict_centroid *head_dict_centroid, struct cord_node *
     return max_delta_bigger_than_epsilon;
 }
 
+/*free memory for cor node*/
+void delete_cord_node(struct cord_node* cord_node){
+    if (cord_node != NULL)
+    {
+        delete_cord_node(cord_node->next);
+        free(cord_node);
+    }
+}
+
+
+void delete__vector_list( struct vector_node *vectors_list)
+{
+    if (vectors_list != NULL )
+    {
+        delete__vector_list(vectors_list->next);
+        delete_cord_node(vectors_list->cords);
+        free(vectors_list);
+    }
+
+}
+
+void delete__dict_list(struct dict_centroid *head_dict_centroid){
+    if (head_dict_centroid != NULL )
+    {
+        delete__dict_list(head_dict_centroid->next);
+        delete_cord_node(head_dict_centroid->centroid);
+        delete_cord_node(head_dict_centroid->sum);
+        free(head_dict_centroid);
+    }
+
+}
+
+
 
 int main(int argc, char *argv[])
 {
@@ -344,6 +377,12 @@ int main(int argc, char *argv[])
         printf("%.4f\n", result_cord->value); 
         result = result->next;  
     }
+
+    /* free - head_vec(and all the cor_node),
+     deltas, head_dict_centroid (and all the cor_node, cor_node for some,int avg)*/
+    delete__vector_list(head_vec);
+    delete__dict_list(head_dict_centroid);
+    delete_cord_node(deltas);
 
     exit(0);
 
