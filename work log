@@ -29,9 +29,30 @@ initialized deltas
 literally finished it
 
 to do-
+
+-free allocated memory 
+
+ask ben:
+-how update code to use stdin // return to this later
+-that we properly freed the memory
+
 -test invalid inputs for python and c
 -add documentarion to all the funcs (not chofer)
+
+
 -read whole forum to make sure we didnt miss anything
 -prep the files for submission
+
+
 - wait for some nerd to sent the GC a tester
 -buy ben a chocolate crunch 
+
+ideas for bad scripts:
+
+0 test_1.txt
+900 test_1.txt
+-1 test_1.txt
+
+30 0 test_1.txt
+30 2000 test_1.txt
+30 -1 test_1.txt
