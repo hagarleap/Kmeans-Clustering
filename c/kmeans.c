@@ -14,20 +14,16 @@ struct vector_node
     struct vector_node *next;
     struct cord_node *cords;
 };
-
 struct dict_node
 {
     struct dict_node *next;
     struct cord_node *centroid;
     struct cord_node *sum;
     int avg_divisor;
-
 };
-
 
 /*Receives sum field (cord_node type) from dict_centroid, and some other cord_node type.
 Adds them and saves the result in the input sum field. */
-
 void vector_addition(struct cord_node* closest_cluster_sum_vec,struct cord_node* vector,int vector_len){
     double cord_value_vector;
     int j;
@@ -40,8 +36,6 @@ void vector_addition(struct cord_node* closest_cluster_sum_vec,struct cord_node*
       }
 
 }
-
-
 
 /*Recives 2 vectors. Returns the euclidian distance between them*/
 double euclidian_distance(struct cord_node* vec1, struct cord_node* vec2, int vector_len){
@@ -81,7 +75,6 @@ struct cord_node* init_deltas(int K){
 
 /*Initializes the vector for the sum field. Filled with zeros, vector is as long as the input vectors.*/
 struct cord_node* ZERO_vector(int vector_len){
-
       struct cord_node *head_zcord_node, *curr_zcord_node, *prev_zcord_node;
       int l;
 
@@ -152,87 +145,63 @@ void delete_cord_node(struct cord_node* cord_node){
 }
 
 /*Frees memory for an input vector node*/
-void delete__vector_list( struct vector_node *vectors_list)
+void delete_vector_list( struct vector_node *vectors_list)
 {
     if (vectors_list != NULL )
     {
-        delete__vector_list(vectors_list->next);
+        delete_vector_list(vectors_list->next);
         delete_cord_node(vectors_list->cords);
         free(vectors_list);
     }
-
 }
 
 /*Frees memory for an input dict node node*/
-void delete__dict_list(struct dict_node *head_dict_centroid){
+void delete_dict_list(struct dict_node *head_dict_centroid){
     if (head_dict_centroid != NULL )
     {
-        delete__dict_list(head_dict_centroid->next);
+        delete_dict_list(head_dict_centroid->next);
         delete_cord_node(head_dict_centroid->centroid);
         delete_cord_node(head_dict_centroid->sum);
         free(head_dict_centroid);
     }
-
 }
-
-
 
 int main(int argc, char *argv[])
 {
-    // FILE *fp;
-    int K;
-    int iter;
-    char *filename;
-    int N = 0;
-    int vector_len=1;
-    int flag=0;
-    int i=1;
-    struct vector_node *vectors_list;
-    struct dict_node *centroid_head_for_UC;
-    struct dict_node *result;
-    struct cord_node *result_cord;
-    int b;
-    struct vector_node *head_vec, *curr_vec, *prev_vec;
-    struct cord_node *head_cord, *curr_cord;
-    struct cord_node *head_cord2, *curr_cord2;
-    double n;
+    int K, iter, b, N = 0, vector_len=1, flag=0, i=1, max_delta_bigger_than_epsilon=1, iter_count = 0;
+    double n, argmin, dist;
     char c;
-    struct dict_node *centroid_list_dict;
-    struct cord_node* deltas;
-    struct dict_node *head_dict_centroid, *curr_dict_centroid, *prev_dict_centroid;
-    int max_delta_bigger_than_epsilon=1;
-    double argmin;
-    double dist;
-    struct dict_node *closest_cluster;
-    int iter_count = 0;
-    struct cord_node *delta_head_for_UC;
+
+    struct vector_node *vectors_list, *head_vec, *curr_vec, *prev_vec;
+    struct cord_node *result_cord, *head_cord, *curr_cord, *head_cord2, *curr_cord2, *deltas, *delta_head_for_UC;
+    struct dict_node *centroid_list_dict, *centroid_head_for_UC, *result, *head_dict_centroid;
+    struct dict_node *curr_dict_centroid, *prev_dict_centroid, *closest_cluster;
 
     /*Initial checks that inputs are valid, and converting inputs into correct data types*/
-    if ((argc > 3) || (argc <= 2)) {
-        fprintf (stdout, "wrong number of arguments!\n");
+    if ((argc > 3) || (argc < 2)) {
+        printf ("wrong number of arguments!\n");
         exit (1);
     }
         
     if (argc == 2) {
         K = atoi (argv[1]);
-         if (1>=K) {
-            fprintf (stdout, "Invalid number of clusters!\n");
+         if (K<=1) {
+            printf ("Invalid number of clusters!\n");
             exit (1);
          }
         iter = 200;
-    }
-    
+    }    
     else {
         K = atoi (argv[1]);
-        if (1>=K) {
-            fprintf (stdout, "Invalid number of clusters!\n");
+        if (K<=1) {
+            printf("Invalid number of clusters!\n");
             exit (1);
         }
         iter = atoi (argv[2]);
         if ((iter==0) ||(iter>1000)) {
-            fprintf (stdout, "Invalid number of iters!\n");
+            printf ("Invalid number of iters!\n");
             exit (1);
-         }
+        }
     }
 
     /*Simultaneously building from the text file the list of input vectors and the Dictionary
@@ -254,8 +223,7 @@ int main(int argc, char *argv[])
     curr_cord2->next = NULL;
 
     while (scanf("%lf%c", &n, &c) == 2)
-    {
-        
+    {        
         if (c == '\n')
         {
             N++;
@@ -306,13 +274,12 @@ int main(int argc, char *argv[])
             vector_len++;
         }
 
-        
     }
     prev_vec->next = NULL;
     prev_dict_centroid->next = NULL;   
     
     if (K>=N){
-        fprintf (stdout, "Invalid number of clusters!\n");
+        printf ("Invalid number of clusters!\n");
         exit (1);
     }
 
@@ -321,7 +288,6 @@ int main(int argc, char *argv[])
     /*new head- for the list of centroid dict */
     centroid_list_dict = head_dict_centroid;
     deltas = init_deltas(K);
-
 
     /*Comparing and updating the centroids dictionary until we reach the maximum amount of iterations, or
     all deltas are less than epsilon.*/
@@ -352,10 +318,8 @@ int main(int argc, char *argv[])
         vectors_list= head_vec;
      } 
 
-
     /*Get the copy of the head of the dict for final print */
     result = head_dict_centroid; 
-
     while(result!=NULL){
 
         result_cord = result->centroid;
@@ -372,10 +336,9 @@ int main(int argc, char *argv[])
     }
 
     /*Free the following: head_vec, deltas, head_dict_centroid*/
-    delete__vector_list(head_vec);
-    delete__dict_list(head_dict_centroid);
+    delete_vector_list(head_vec);
+    delete_dict_list(head_dict_centroid);
     delete_cord_node(deltas);
 
     exit(0);
-
 }
