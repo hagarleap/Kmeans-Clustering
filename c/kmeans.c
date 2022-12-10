@@ -179,7 +179,7 @@ void delete__dict_list(struct dict_node *head_dict_centroid){
 
 int main(int argc, char *argv[])
 {
-    FILE *fp;
+    // FILE *fp;
     int K;
     int iter;
     char *filename;
@@ -208,19 +208,18 @@ int main(int argc, char *argv[])
     struct cord_node *delta_head_for_UC;
 
     /*Initial checks that inputs are valid, and converting inputs into correct data types*/
-    if ((argc > 4) || (argc <= 2)) {
+    if ((argc > 3) || (argc <= 2)) {
         fprintf (stdout, "wrong number of arguments!\n");
         exit (1);
     }
         
-    if (argc == 3) {
+    if (argc == 2) {
         K = atoi (argv[1]);
          if (1>=K) {
             fprintf (stdout, "Invalid number of clusters!\n");
             exit (1);
          }
         iter = 200;
-        filename = argv[2];
     }
     
     else {
@@ -234,12 +233,7 @@ int main(int argc, char *argv[])
             fprintf (stdout, "Invalid number of iters!\n");
             exit (1);
          }
-        filename = argv[3];
     }
-
-    
-    fp = fopen(filename, "r");
-
 
     /*Simultaneously building from the text file the list of input vectors and the Dictionary
      that holds the centroids */
@@ -259,9 +253,7 @@ int main(int argc, char *argv[])
     curr_cord2 = head_cord2;
     curr_cord2->next = NULL;
 
-    
-
-    while (fscanf(fp,"%lf%c", &n, &c) == 2)
+    while (scanf("%lf%c", &n, &c) == 2)
     {
         
         if (c == '\n')
@@ -317,9 +309,7 @@ int main(int argc, char *argv[])
         
     }
     prev_vec->next = NULL;
-    prev_dict_centroid->next = NULL;
-    fclose(fp);
-   
+    prev_dict_centroid->next = NULL;   
     
     if (K>=N){
         fprintf (stdout, "Invalid number of clusters!\n");
