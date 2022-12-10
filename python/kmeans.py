@@ -15,11 +15,8 @@ def kmeans(k, input_data, iter=200):
     
     N= len(vectors)
     
-    if 1>=k or k>=N or type(k)!=int :
+    if k>=N:
         print("Invalid number of clusters!")
-        return
-    if 1>=iter or k>=1000:
-        print("Invalid maximum iteration!")
         return
     
     clusters = {}
@@ -75,10 +72,39 @@ def update_centroid(deltas, clusters, clusters_keys):
         clusters[tuple(new_centroid)] = [[0 for i in range(len(new_centroid))],0]
 
 argv = sys.argv[1:]
-opts, args = getopt.getopt(argv, "")
-if len(args)==2:
-    kmeans(int(args[0]), args[1])
-elif len(args)==3:
-    kmeans(int(args[0]), args[2], int(args[1]))
+if len(argv)==2:
+    try:
+        arg0 = int(argv[0])
+    except:
+        print("Invalid number of clusters!")
+        exit()
+
+    if arg0>1:
+        kmeans(arg0, argv[1])
+    else:
+        print("Invalid number of clusters!")
+        exit()
+elif len(argv)==3:
+    try:
+        arg0 = int(argv[0])
+    except:
+        print("Invalid number of clusters!")
+        exit()
+    
+    try:
+        arg1 = int(argv[1])
+    except:
+        print("Invalid maximum iteration!")
+        exit()
+
+    if arg0<=1:
+        print("Invalid number of clusters!")
+        exit()
+    if  1<arg1<1000:
+        kmeans(arg0, argv[2], arg1)
+    else:
+        print("Invalid maximum iteration!")
+        exit()
 else:
     print("An Error Has Occurred")
+    exit()
