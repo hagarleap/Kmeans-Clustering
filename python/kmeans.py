@@ -45,8 +45,7 @@ def kmeans(k, input_data, iter=200):
         for i in range(len(centroid)-1):
             print(f"{round(centroid[i], 4)}," , end="")
         print(f"{round(centroid[-1],4)}")
-     ####fix output to not be tuple but rather text with no parenthesis, and round up to 4 places
-     ####check other files       
+    
         
 def init(k, clusters, vectors):
     vector_length = len(vectors[0])

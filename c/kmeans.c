@@ -60,12 +60,21 @@ struct cord_node* init_deltas(int K){
       struct cord_node *head_deltas_node, *curr_deltas_node, *prev_deltas_node;
       int i;
       head_deltas_node = malloc(sizeof(struct cord_node));
+      if(head_deltas_node==NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+      }
+
       curr_deltas_node = head_deltas_node;
       curr_deltas_node->next = NULL;
       for(i=0; i<K; i++)
       {
          curr_deltas_node->value = 1;
          curr_deltas_node->next = malloc(sizeof(struct cord_node));
+         if((curr_deltas_node->next)==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
          prev_deltas_node = curr_deltas_node;
          curr_deltas_node = curr_deltas_node->next; 
       }
@@ -79,7 +88,10 @@ struct cord_node* ZERO_vector(int vector_len){
       int l;
 
       head_zcord_node = malloc(sizeof(struct cord_node));
-    /*  assert(head_zcord_node!=NULL); */
+      if(head_zcord_node==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
       curr_zcord_node = head_zcord_node;
       curr_zcord_node->next = NULL;
 
@@ -88,9 +100,12 @@ struct cord_node* ZERO_vector(int vector_len){
       {
          curr_zcord_node->value = 0;
          curr_zcord_node->next = malloc(sizeof(struct cord_node));
+         if((curr_zcord_node->next)==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
          prev_zcord_node = curr_zcord_node;
          curr_zcord_node = curr_zcord_node->next; 
-     /*  assert(curr_zcord_node!=NULL); */
       }
       prev_zcord_node->next=NULL; 
       return head_zcord_node;
@@ -179,14 +194,14 @@ int main(int argc, char *argv[])
 
     /*Initial checks that inputs are valid, and converting inputs into correct data types*/
     if ((argc > 3) || (argc < 2)) {
-        printf ("wrong number of arguments!\n");
+        printf ("wrong number of arguments!");
         exit (1);
     }
         
     if (argc == 2) {
         K = atoi (argv[1]);
          if (K<=1) {
-            printf ("Invalid number of clusters!\n");
+            printf ("Invalid number of clusters!");
             exit (1);
          }
         iter = 200;
@@ -194,12 +209,12 @@ int main(int argc, char *argv[])
     else {
         K = atoi (argv[1]);
         if (K<=1) {
-            printf("Invalid number of clusters!\n");
+            printf("Invalid number of clusters!");
             exit (1);
         }
         iter = atoi (argv[2]);
         if ((iter==0) ||(iter>1000)) {
-            printf ("Invalid number of iters!\n");
+            printf ("Invalid number of iters!");
             exit (1);
         }
     }
@@ -207,18 +222,34 @@ int main(int argc, char *argv[])
     /*Simultaneously building from the text file the list of input vectors and the Dictionary
      that holds the centroids */
     head_dict_centroid = malloc(sizeof(struct dict_node));
+    if(head_dict_centroid==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
     curr_dict_centroid = head_dict_centroid;
     curr_dict_centroid->next = NULL;
 
     head_cord = malloc(sizeof(struct cord_node));
+    if(head_cord==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
     curr_cord = head_cord;
     curr_cord->next = NULL;
 
     head_vec = malloc(sizeof(struct vector_node));
+    if(head_vec==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
     curr_vec = head_vec;
     curr_vec->next = NULL;
 
     head_cord2 = malloc(sizeof(struct cord_node));
+    if(head_cord2==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
     curr_cord2 = head_cord2;
     curr_cord2->next = NULL;
 
@@ -231,11 +262,19 @@ int main(int argc, char *argv[])
             curr_cord->value = n;
             curr_vec->cords = head_cord;
             curr_vec->next = malloc(sizeof(struct vector_node));
+            if((curr_vec->next)==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
             prev_vec = curr_vec;
             curr_vec = curr_vec->next;
             curr_vec->next = NULL;
 
             head_cord = malloc(sizeof(struct cord_node));
+            if(head_cord==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
             curr_cord = head_cord;
             curr_cord->next = NULL;
 
@@ -247,10 +286,18 @@ int main(int argc, char *argv[])
                 curr_dict_centroid->sum = ZERO_vector(vector_len); 
                 curr_dict_centroid->avg_divisor =0;
                 curr_dict_centroid->next = malloc(sizeof(struct dict_node));
+                if((curr_dict_centroid->next)==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
                 prev_dict_centroid = curr_dict_centroid;
                 curr_dict_centroid = curr_dict_centroid->next;
       
                 head_cord2 = malloc(sizeof(struct cord_node));
+                if(head_cord2==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
                 curr_cord2 = head_cord2;
                 curr_cord2->next = NULL;   
             }
@@ -260,12 +307,20 @@ int main(int argc, char *argv[])
 
         curr_cord->value = n;
         curr_cord->next = malloc(sizeof(struct cord_node));
+        if((curr_cord->next)==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
         curr_cord = curr_cord->next;
         curr_cord->next = NULL;
 
         if(i<=K){
             curr_cord2->value = n;
             curr_cord2->next = malloc(sizeof(struct cord_node));
+            if((curr_cord2->next)==NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+         }
             curr_cord2 = curr_cord2->next;
             curr_cord2->next = NULL;
         }
@@ -279,7 +334,9 @@ int main(int argc, char *argv[])
     prev_dict_centroid->next = NULL;   
     
     if (K>=N){
-        printf ("Invalid number of clusters!\n");
+        printf ("Invalid number of clusters!");
+        delete_vector_list(head_vec);
+        delete_dict_list(head_dict_centroid);
         exit (1);
     }
 
