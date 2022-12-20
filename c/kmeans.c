@@ -78,6 +78,7 @@ struct cord_node* init_deltas(int K){
          prev_deltas_node = curr_deltas_node;
          curr_deltas_node = curr_deltas_node->next; 
       }
+      free(curr_deltas_node);
       prev_deltas_node->next=NULL; 
       return head_deltas_node;
 }
@@ -107,6 +108,7 @@ struct cord_node* ZERO_vector(int vector_len){
          prev_zcord_node = curr_zcord_node;
          curr_zcord_node = curr_zcord_node->next; 
       }
+      free(curr_zcord_node);
       prev_zcord_node->next=NULL; 
       return head_zcord_node;
       
@@ -152,33 +154,63 @@ int update_centroid(struct dict_node *head_dict_centroid, struct cord_node *delt
 
 /*Frees memory for an input cord node*/
 void delete_cord_node(struct cord_node* cord_node){
+    struct cord_node* next_cord;
+    next_cord = NULL;
     if (cord_node != NULL)
     {
-        delete_cord_node(cord_node->next);
+        next_cord= cord_node->next;
+    }
+    while(next_cord != NULL) {
+        free(cord_node);
+        cord_node = next_cord;
+        next_cord = cord_node->next;
+    }
+    if (cord_node != NULL) { 
         free(cord_node);
     }
 }
 
+
+
 /*Frees memory for an input vector node*/
 void delete_vector_list( struct vector_node *vectors_list)
 {
-    if (vectors_list != NULL )
+    struct vector_node *curr_vector, *next_vector;
+    curr_vector = vectors_list;
+    next_vector = curr_vector->next;
+
+    while (next_vector != NULL )
     {
-        delete_vector_list(vectors_list->next);
-        delete_cord_node(vectors_list->cords);
-        free(vectors_list);
+        delete_cord_node(curr_vector->cords);
+        free(curr_vector);
+        curr_vector = next_vector;
+        next_vector = curr_vector->next;
+      
     }
+    delete_cord_node(curr_vector->cords);
+    free(curr_vector);
 }
 
 /*Frees memory for an input dict node node*/
 void delete_dict_list(struct dict_node *head_dict_centroid){
-    if (head_dict_centroid != NULL )
+
+    struct dict_node *curr_dict, *next_dict;
+    curr_dict = head_dict_centroid;
+    next_dict = curr_dict->next;
+
+    while (next_dict != NULL )
     {
-        delete_dict_list(head_dict_centroid->next);
-        delete_cord_node(head_dict_centroid->centroid);
-        delete_cord_node(head_dict_centroid->sum);
-        free(head_dict_centroid);
+        delete_cord_node(curr_dict->centroid);
+        delete_cord_node(curr_dict->sum);
+        free(curr_dict);
+        curr_dict = next_dict;
+        next_dict = curr_dict->next;
+      
     }
+    delete_cord_node(curr_dict->centroid);
+    delete_cord_node(curr_dict->sum);
+    free(curr_dict);
+
 }
 
 int main(int argc, char *argv[])
@@ -287,9 +319,9 @@ int main(int argc, char *argv[])
                 curr_dict_centroid->avg_divisor =0;
                 curr_dict_centroid->next = malloc(sizeof(struct dict_node));
                 if((curr_dict_centroid->next)==NULL){
-            printf("An Error Has Occurred");
-            exit(1);
-         }
+                     printf("An Error Has Occurred");
+                     exit(1);
+                }
                 prev_dict_centroid = curr_dict_centroid;
                 curr_dict_centroid = curr_dict_centroid->next;
       
@@ -330,6 +362,10 @@ int main(int argc, char *argv[])
         }
 
     }
+    free(curr_cord);
+    free(curr_cord2);
+    delete_vector_list(curr_vec);
+    delete_dict_list(curr_dict_centroid);
     prev_vec->next = NULL;
     prev_dict_centroid->next = NULL;   
     
