@@ -152,8 +152,10 @@ int update_centroid(struct dict_node *head_dict_centroid, struct cord_node *delt
     return max_delta_bigger_than_epsilon;
 }
 
+
 /*Frees memory for an input cord node*/
 void delete_cord_node(struct cord_node* cord_node){
+if(cord_node==NULL){
     struct cord_node* next_cord;
     next_cord = NULL;
     if (cord_node != NULL)
@@ -168,16 +170,18 @@ void delete_cord_node(struct cord_node* cord_node){
     if (cord_node != NULL) { 
         free(cord_node);
     }
+  }
 }
+
 
 
 
 /*Frees memory for an input vector node*/
 void delete_vector_list( struct vector_node *vectors_list)
 {
-    struct vector_node *curr_vector, *next_vector;
+    struct vector_node *curr_vector=NULL, *next_vector=NULL;
     curr_vector = vectors_list;
-    next_vector = curr_vector->next;
+    next_vector = vectors_list->next;
 
     while (next_vector != NULL )
     {
@@ -191,12 +195,13 @@ void delete_vector_list( struct vector_node *vectors_list)
     free(curr_vector);
 }
 
+
 /*Frees memory for an input dict node node*/
 void delete_dict_list(struct dict_node *head_dict_centroid){
 
-    struct dict_node *curr_dict, *next_dict;
+    struct dict_node *curr_dict=NULL, *next_dict=NULL;
     curr_dict = head_dict_centroid;
-    next_dict = curr_dict->next;
+    next_dict = head_dict_centroid->next;
 
     while (next_dict != NULL )
     {
